@@ -12,8 +12,13 @@ import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
+import useSWR from 'swr'
+import { fetcher } from 'src/utils/fetcher'
 
 const Dashboard = () => {
+  const { data } = useSWR('/api/hello', fetcher)
+  console.log(data)
+
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
