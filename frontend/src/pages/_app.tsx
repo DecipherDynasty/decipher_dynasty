@@ -12,6 +12,7 @@ import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsCo
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import '../../styles/globals.css'
+import { trpc } from 'src/utils/trpc'
 
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -63,4 +64,4 @@ const App = (props: ExtendedAppProps) => {
   )
 }
 
-export default App
+export default trpc.withTRPC(App)
