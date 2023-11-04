@@ -1,10 +1,5 @@
-// ** React Imports
-import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode } from 'react'
-
-// ** Next Imports
+import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useCallback, FormEvent, ReactElement } from 'react'
 import Link from 'next/link'
-
-// ** MUI Components
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -19,19 +14,15 @@ import { styled } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
-// ** Icons Imports
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-
-// ** Configs
 import themeConfig from 'src/configs/themeConfig'
-
-// ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-
-// ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import Snackbar from '@mui/material/Snackbar'
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
+import { auth } from 'src/utils/firebase'
+import Alert, { AlertColor } from '@mui/material/Alert'
 
 interface State {
   password: string
@@ -59,22 +50,67 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const RegisterPage = () => {
-  // ** States
+  // States
+  const [email, setEmail] = useState('')
+
   const [values, setValues] = useState<State>({
     password: '',
     showPassword: false
   })
 
-  // ** Hook
-  const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [prop]: event.target.value })
-  }
-  const handleClickShowPassword = () => {
+  const [toast, setToast] = useState({
+    shouldShow: false,
+    message: '',
+    severity: 'success'
+  })
+
+  // Methods in the component.
+  const handleEmailChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const email = e.target.value
+    setEmail(email)
+  }, [])
+
+  const handlePasswordChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setValues({ ...values, password: event.target.value })
+    },
+    [values]
+  )
+
+  const handleClickShowPassword = useCallback(() => {
     setValues({ ...values, showPassword: !values.showPassword })
-  }
-  const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
+  }, [values])
+
+  const handleMouseDownPassword = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-  }
+  }, [])
+
+  const submitRegistration = useCallback(
+    async (e: FormEvent<HTMLElement>) => {
+      try {
+        e.preventDefault()
+
+        // Attempt to create a user with an email and password.
+        await createUserWithEmailAndPassword(auth, email, values.password)
+
+        // Sign out here because we want to use NextAuth rather than the individual auth.
+        await signOut(auth)
+
+        setToast({
+          shouldShow: true,
+          message: 'Successfully created!',
+          severity: 'success'
+        })
+      } catch (e) {
+        setToast({
+          shouldShow: true,
+          message: (e as Error).message,
+          severity: 'error'
+        })
+      }
+    },
+    [email, values]
+  )
 
   return (
     <Box className='content-center'>
@@ -91,21 +127,28 @@ const RegisterPage = () => {
                 fontSize: '1.5rem !important'
               }}
             >
-              {themeConfig.templateName}
+              🛡️ {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='body2'>Register your account here</Typography>
+            <Typography variant='body2'>Register an account</Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField fullWidth type='email' label='Business Email' sx={{ marginBottom: 4 }} />
+          <form noValidate autoComplete='off' onSubmit={submitRegistration}>
+            <TextField
+              fullWidth
+              type='email'
+              label='Business Email'
+              sx={{ marginBottom: 4 }}
+              value={email}
+              onChange={handleEmailChange}
+            />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-register-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
                 value={values.password}
                 id='auth-register-password'
-                onChange={handleChange('password')}
+                onChange={handlePasswordChange}
                 type={values.showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position='end'>
@@ -148,6 +191,20 @@ const RegisterPage = () => {
               </Typography>
             </Box>
           </form>
+          <Snackbar
+            autoHideDuration={3000}
+            open={toast.shouldShow}
+            onClose={() =>
+              setToast({
+                ...toast,
+                shouldShow: false
+              })
+            }
+          >
+            <Alert severity={toast.severity as AlertColor} sx={{ width: '100%' }}>
+              {toast.message as unknown as ReactElement<any, any>}
+            </Alert>
+          </Snackbar>
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />

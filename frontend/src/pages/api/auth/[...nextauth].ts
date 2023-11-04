@@ -1,7 +1,7 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaClient, type Account } from '@prisma/client'
-import { compare } from 'bcryptjs'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from 'src/utils/firebase'
 
 /**
  * Integrating Firebase Auth with NextAuth so that we can use the
@@ -41,25 +41,10 @@ export const authOptions: NextAuthOptions = {
           throw Error('Please check your inputs')
         }
 
-        const prisma = new PrismaClient()
-
-        const { email, password } = credential as {
-          email: string
-          password: string
-        }
-
-        const account: Account = await prisma.account.findFirstOrThrow({
-          where: {
-            email
-          }
-        })
-
-        const isValidCredentials = await compare(password, account.hashed_password)
-
-        if (!isValidCredentials) throw Error('Invalid credentials')
+        const { user } = await signInWithEmailAndPassword(auth, credential.email, credential.password)
 
         return {
-          id: account.id
+          id: user.uid
         }
       }
     })
