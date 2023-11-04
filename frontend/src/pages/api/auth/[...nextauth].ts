@@ -43,6 +43,8 @@ export const authOptions: NextAuthOptions = {
 
         const { user } = await signInWithEmailAndPassword(auth, credential.email, credential.password)
 
+        console.log(46, user)
+
         return {
           id: user.uid
         }

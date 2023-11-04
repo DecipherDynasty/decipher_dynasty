@@ -20,9 +20,11 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import Snackbar from '@mui/material/Snackbar'
-import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from 'src/utils/firebase'
 import Alert, { AlertColor } from '@mui/material/Alert'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 interface State {
   password: string
@@ -50,6 +52,8 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const RegisterPage = () => {
+  const router = useRouter()
+
   // States
   const [email, setEmail] = useState('')
 
@@ -94,13 +98,19 @@ const RegisterPage = () => {
         await createUserWithEmailAndPassword(auth, email, values.password)
 
         // Sign out here because we want to use NextAuth rather than the individual auth.
-        await signOut(auth)
+        await signIn('credentials', {
+          email,
+          password: values.password,
+          redirect: false
+        })
 
         setToast({
           shouldShow: true,
-          message: 'Successfully created!',
+          message: 'Successfully created! Logging in now',
           severity: 'success'
         })
+
+        setTimeout(() => router.push('/'), 2000)
       } catch (e) {
         setToast({
           shouldShow: true,
@@ -109,7 +119,7 @@ const RegisterPage = () => {
         })
       }
     },
-    [email, values]
+    [email, values, router]
   )
 
   return (
