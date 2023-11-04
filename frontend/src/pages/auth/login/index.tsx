@@ -88,9 +88,7 @@ const LoginPage = () => {
           redirect: false
         })
 
-        console.log(result)
-
-        if (result && result.error) throw Error(result.error)
+        if (result && !result.ok && result.error) throw Error(result.error)
 
         router.push('/')
       } catch (e) {
