@@ -20,7 +20,7 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import Snackbar from '@mui/material/Snackbar'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth } from 'src/utils/firebase'
 import Alert, { AlertColor } from '@mui/material/Alert'
 import { signIn } from 'next-auth/react'
@@ -96,6 +96,8 @@ const RegisterPage = () => {
 
         // Attempt to create a user with an email and password.
         await createUserWithEmailAndPassword(auth, email, values.password)
+
+        await signOut(auth)
 
         // Sign out here because we want to use NextAuth rather than the individual auth.
         await signIn('credentials', {

@@ -1,43 +1,106 @@
-import { forwardRef, useState, useCallback, ChangeEvent } from 'react'
+import { forwardRef, useState, useCallback, ChangeEvent, FormEvent, ReactElement } from 'react'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
-import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
-import FormControl from '@mui/material/FormControl'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Alert, { AlertColor } from '@mui/material/Alert'
+import Snackbar from '@mui/material/Snackbar'
 import DatePicker from 'react-datepicker'
+import { trpc } from 'src/utils/trpc'
+import { z } from 'zod'
+import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
 
-const CustomInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Birth Date' autoComplete='off' />
+const StartDateInput = forwardRef((props, ref) => {
+  return <TextField fullWidth {...props} inputRef={ref} label='Start Date' autoComplete='off' />
+})
+
+const EndDateInput = forwardRef((props, ref) => {
+  return <TextField fullWidth {...props} inputRef={ref} label='End Date' autoComplete='off' />
 })
 
 const VerificationForm = () => {
+  const { mutateAsync, isLoading } = trpc.event.createEvent.useMutation()
   const [eventName, setEventName] = useState('')
-  const [language, setLanguage] = useState<string[]>([])
-  const [date, setDate] = useState<Date | null | undefined>(null)
+  const [location, setLocation] = useState('')
+  const [startDate, setStartDate] = useState<Date | null | undefined>(null)
+  const [endDate, setEndDate] = useState<Date | null | undefined>(null)
+  const [description, setDescription] = useState('')
+  const [intendedAmountToRaise, setIntendedAmountToRaise] = useState(0)
+  const [toast, setToast] = useState({
+    shouldShow: false,
+    message: '',
+    severity: 'success'
+  })
 
   const handleEventNameChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setEventName(e.target.value)
   }, [])
 
-  // Handle Select
-  const handleSelectChange = (event: SelectChangeEvent<string[]>) => {
-    setLanguage(event.target.value as string[])
-  }
+  const handleLocationChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setLocation(e.target.value)
+  }, [])
+
+  const handleDescriptionChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value)
+  }, [])
+
+  const onIntendedAmountToRaiseChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (isNaN(parseFloat(e.target.value))) return
+    setIntendedAmountToRaise(parseFloat(e.target.value))
+  }, [])
+
+  const submitForm = useCallback(
+    async (e: FormEvent<HTMLElement>) => {
+      try {
+        e.preventDefault()
+
+        const input = {
+          eventDescription: description,
+          eventEndDate: endDate,
+          eventLocation: location,
+          eventName,
+          eventStartDate: startDate,
+          intendedAmountToRaise: intendedAmountToRaise
+        }
+
+        const parsed = createEventFormSchema.parse(input)
+
+        await mutateAsync(parsed)
+
+        setToast({
+          severity: 'success',
+          shouldShow: true,
+          message: 'Event has been successfully created'
+        })
+      } catch (e) {
+        let errorMessage: string
+
+        if (e instanceof z.ZodError) {
+          errorMessage = e.errors[0].message
+        } else {
+          errorMessage = (e as Error).message
+        }
+
+        setToast({
+          severity: 'error',
+          shouldShow: true,
+          message: errorMessage
+        })
+      }
+    },
+    [eventName, mutateAsync, location, endDate, startDate, intendedAmountToRaise, description]
+  )
 
   return (
     <Card>
       <CardHeader title='Register for verification' titleTypographyProps={{ variant: 'h6' }} />
       <Divider sx={{ margin: 0 }} />
-      <form onSubmit={e => e.preventDefault()}>
+      <form onSubmit={submitForm}>
         <CardContent>
           <Grid container spacing={5}>
             <Grid item xs={12}>
@@ -52,61 +115,75 @@ const VerificationForm = () => {
               <TextField fullWidth label='Event Name' value={eventName} onChange={handleEventNameChange} />
             </Grid>
 
-            {/* 
-                If it is charity event, we need to get them to describe the event, 
-                the duration of the event, the location of the event and how much they
-                intend to raise. 
-            */}
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Last Name' placeholder='Carter' />
+              <TextField fullWidth label='Location' value={location} onChange={handleLocationChange} />
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id='form-layouts-separator-multiple-select-label'>Language</InputLabel>
-                <Select
-                  multiple
-                  value={language}
-                  onChange={handleSelectChange}
-                  id='form-layouts-separator-multiple-select'
-                  labelId='form-layouts-separator-multiple-select-label'
-                  input={<OutlinedInput label='Language' id='select-multiple-language' />}
-                >
-                  <MenuItem value='English'>English</MenuItem>
-                  <MenuItem value='French'>French</MenuItem>
-                  <MenuItem value='Spanish'>Spanish</MenuItem>
-                  <MenuItem value='Portuguese'>Portuguese</MenuItem>
-                  <MenuItem value='Italian'>Italian</MenuItem>
-                  <MenuItem value='German'>German</MenuItem>
-                  <MenuItem value='Arabic'>Arabic</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
               <DatePicker
-                selected={date}
+                selected={startDate}
                 showYearDropdown
                 showMonthDropdown
                 placeholderText='MM-DD-YYYY'
-                customInput={<CustomInput />}
-                id='form-layouts-separator-date'
-                onChange={(date: Date) => setDate(date)}
+                customInput={<StartDateInput />}
+                id='form-layouts-separator-date-start'
+                onChange={(date: Date) => setStartDate(date)}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Phone No.' placeholder='+1-123-456-8790' />
+              <DatePicker
+                selected={endDate}
+                showYearDropdown
+                showMonthDropdown
+                placeholderText='MM-DD-YYYY'
+                customInput={<EndDateInput />}
+                id='form-layouts-separator-date-end'
+                onChange={(date: Date) => setEndDate(date)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label='Intended Amount To Raise (USD)'
+                value={intendedAmountToRaise}
+                onChange={onIntendedAmountToRaiseChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                value={description}
+                onChange={handleDescriptionChange}
+                multiline
+                label='Description'
+              />
             </Grid>
           </Grid>
         </CardContent>
         <Divider sx={{ margin: 0 }} />
         <CardActions>
-          <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained'>
+          <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained' disabled={isLoading}>
             Submit
           </Button>
           <Button size='large' color='secondary' variant='outlined'>
             Cancel
           </Button>
         </CardActions>
+        <Snackbar
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          autoHideDuration={3000}
+          open={toast.shouldShow}
+          onClose={() =>
+            setToast({
+              ...toast,
+              shouldShow: false
+            })
+          }
+        >
+          <Alert severity={toast.severity as AlertColor} sx={{ width: '100%' }}>
+            {toast.message as unknown as ReactElement<any, any>}
+          </Alert>
+        </Snackbar>
       </form>
     </Card>
   )
