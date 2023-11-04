@@ -14,8 +14,7 @@ import { auth } from 'src/utils/firebase'
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: 'jwt',
-    maxAge: 24 * 60 * 60
+    strategy: 'jwt'
   },
   callbacks: {
     jwt({ token }) {
@@ -42,8 +41,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         const { user } = await signInWithEmailAndPassword(auth, credential.email, credential.password)
-
-        console.log(46, user)
 
         return {
           id: user.uid
