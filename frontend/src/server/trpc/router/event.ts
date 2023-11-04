@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server'
 import { organisationCollection } from 'src/server/db/collections/organisationCollection'
 import { eventCollection } from 'src/server/db/collections/eventCollection'
 import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
+import { firestore } from 'firebase-admin'
 
 /**
  * The following procedure will be called when an organisation or user
@@ -11,11 +12,8 @@ import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
  * the database.
  */
 const createEventProcedure = protectedProcedure.input(createEventFormSchema).mutation(async ({ ctx, input }) => {
-  // We attempt to build the event object using the user data and input.
-  const uid = ctx.session.user.id
-
   // Verify if the organisation exists
-  const organisationSnapshot = await organisationCollection.doc(uid).get()
+  const organisationSnapshot = await organisationCollection.doc(ctx.session.user.id).get()
   if (!organisationSnapshot.exists) {
     throw new TRPCError({
       code: 'FORBIDDEN'
@@ -25,13 +23,13 @@ const createEventProcedure = protectedProcedure.input(createEventFormSchema).mut
   // Create an event object and store it into the database.
   await eventCollection.doc().set({
     eventDescription: input.eventDescription,
-    eventEndDate: FirebaseFirestore.Timestamp.fromDate(input.eventEndDate),
+    eventEndDate: firestore.Timestamp.fromDate(input.eventEndDate),
     eventLocation: input.eventLocation,
     eventName: input.eventName,
-    eventStartDate: FirebaseFirestore.Timestamp.fromDate(input.eventStartDate),
+    eventStartDate: firestore.Timestamp.fromDate(input.eventStartDate),
     intendedAmountToRaise: input.intendedAmountToRaise,
     isVerified: false,
-    organisationId: uid
+    organisationId: ctx.session.user.id
   })
 })
 

@@ -14,7 +14,7 @@ const createOrganisation = publicProcedure.input(createAccountFormSchema).mutati
   }
 
   // Create a new organisation object
-  await organisationCollection.doc().set({
+  await organisationCollection.doc(input.uid).set({
     contactNumber: input.contactNumber,
     email: input.email,
     name: input.organisationName,

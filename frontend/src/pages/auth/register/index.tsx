@@ -98,20 +98,20 @@ const RegisterPage = () => {
           throw Error('Invalid contact number format')
         }
 
-        const parsed = createAccountFormSchema.parse({
-          contactNumber,
-          email,
-          organisationName
-        })
-
         setIsLoading(true)
 
         // Attempt to create a user with an email and password.
-        await createUserWithEmailAndPassword(auth, email, values.password)
+        const { user } = await createUserWithEmailAndPassword(auth, email, values.password)
 
         await signOut(auth)
 
-        // Sign out here because we want to use NextAuth rather than the individual auth.
+        const parsed = createAccountFormSchema.parse({
+          contactNumber,
+          email,
+          organisationName,
+          uid: user.uid
+        })
+
         await Promise.all([
           signIn('credentials', {
             email,
