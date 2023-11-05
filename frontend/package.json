@@ -25,7 +25,9 @@
     "@trpc/react-query": "^10.43.1",
     "@trpc/server": "^10.43.1",
     "apexcharts-clevision": "3.28.5",
+    "dayjs": "^1.11.10",
     "firebase": "^10.5.2",
+    "firebase-admin": "^11.11.0",
     "mdi-material-ui": "^7.7.0",
     "next": "^12.2.6",
     "next-auth": "^4.22.1",
@@ -35,8 +37,10 @@
     "react-datepicker": "^4.5.0",
     "react-dom": "17.0.2",
     "react-perfect-scrollbar": "^1.5.8",
+    "react-phone-number-input": "^3.3.7",
     "react-popper": "^2.3.0",
-    "superjson": "^1.12.2"
+    "superjson": "^1.12.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "16.11.11",

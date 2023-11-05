@@ -1,8 +1,7 @@
-import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useCallback, FormEvent, ReactElement } from 'react'
+import { useState, ChangeEvent, MouseEvent, ReactNode, useCallback, FormEvent, ReactElement } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
@@ -13,18 +12,23 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import { styled } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
-import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import Snackbar from '@mui/material/Snackbar'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth } from 'src/utils/firebase'
 import Alert, { AlertColor } from '@mui/material/Alert'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { trpc } from 'src/utils/trpc'
+import { createAccountFormSchema } from 'src/models/schema/createAccountFormSchema'
+import PhoneInput from 'react-phone-number-input'
+import { E164Number } from 'libphonenumber-js/types'
+import { isValidPhoneNumber } from 'libphonenumber-js/min'
+import 'react-phone-number-input/style.css'
 
 interface State {
   password: string
@@ -42,33 +46,29 @@ const LinkStyled = styled('a')(({ theme }) => ({
   color: theme.palette.primary.main
 }))
 
-const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
-  marginTop: theme.spacing(1.5),
-  marginBottom: theme.spacing(4),
-  '& .MuiFormControlLabel-label': {
-    fontSize: '0.875rem',
-    color: theme.palette.text.secondary
-  }
-}))
-
 const RegisterPage = () => {
   const router = useRouter()
+  const { mutateAsync } = trpc.organisation.createOrganisation.useMutation()
 
-  // States
+  const [organisationName, setOrganisationName] = useState('')
+  const [contactNumber, setContactNumber] = useState<E164Number | undefined>()
   const [email, setEmail] = useState('')
-
   const [values, setValues] = useState<State>({
     password: '',
     showPassword: false
   })
-
   const [toast, setToast] = useState({
     shouldShow: false,
     message: '',
     severity: 'success'
   })
+  const [isLoading, setIsLoading] = useState(false)
 
   // Methods in the component.
+  const handleOrganisationNameChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setOrganisationName(e.target.value)
+  }, [])
+
   const handleEmailChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const email = e.target.value
     setEmail(email)
@@ -94,15 +94,32 @@ const RegisterPage = () => {
       try {
         e.preventDefault()
 
-        // Attempt to create a user with an email and password.
-        await createUserWithEmailAndPassword(auth, email, values.password)
+        if (!contactNumber || !isValidPhoneNumber(contactNumber)) {
+          throw Error('Invalid contact number format')
+        }
 
-        // Sign out here because we want to use NextAuth rather than the individual auth.
-        await signIn('credentials', {
+        setIsLoading(true)
+
+        // Attempt to create a user with an email and password.
+        const { user } = await createUserWithEmailAndPassword(auth, email, values.password)
+
+        await signOut(auth)
+
+        const parsed = createAccountFormSchema.parse({
+          contactNumber,
           email,
-          password: values.password,
-          redirect: false
+          organisationName,
+          uid: user.uid
         })
+
+        await Promise.all([
+          signIn('credentials', {
+            email,
+            password: values.password,
+            redirect: false
+          }),
+          mutateAsync(parsed)
+        ])
 
         setToast({
           shouldShow: true,
@@ -110,16 +127,18 @@ const RegisterPage = () => {
           severity: 'success'
         })
 
-        setTimeout(() => router.push('/'), 2000)
+        router.push('/')
       } catch (e) {
         setToast({
           shouldShow: true,
           message: (e as Error).message,
           severity: 'error'
         })
+      } finally {
+        setIsLoading(false)
       }
     },
-    [email, values, router]
+    [email, values, router, organisationName, mutateAsync, contactNumber]
   )
 
   return (
@@ -146,17 +165,28 @@ const RegisterPage = () => {
           <form noValidate autoComplete='off' onSubmit={submitRegistration}>
             <TextField
               fullWidth
+              type='text'
+              label='Organisation Name'
+              sx={{ marginBottom: 4 }}
+              value={organisationName}
+              onChange={handleOrganisationNameChange}
+              required
+            />
+            <TextField
+              fullWidth
               type='email'
               label='Business Email'
               sx={{ marginBottom: 4 }}
               value={email}
               onChange={handleEmailChange}
+              required
             />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-register-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
                 value={values.password}
+                required
                 id='auth-register-password'
                 onChange={handlePasswordChange}
                 type={values.showPassword ? 'text' : 'password'}
@@ -174,20 +204,17 @@ const RegisterPage = () => {
                 }
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox />}
-              label={
-                <Fragment>
-                  <span>I agree to </span>
-                  <Link href='/' passHref>
-                    <LinkStyled onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                      privacy policy & terms
-                    </LinkStyled>
-                  </Link>
-                </Fragment>
-              }
-            />
-            <Button fullWidth size='large' type='submit' variant='contained' sx={{ marginBottom: 7 }}>
+            <Box sx={{ marginY: 4 }}>
+              <PhoneInput value={contactNumber} onChange={setContactNumber} />
+            </Box>
+            <Button
+              fullWidth
+              size='large'
+              type='submit'
+              variant='contained'
+              sx={{ marginBottom: 7 }}
+              disabled={isLoading}
+            >
               Sign up
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>

@@ -5,17 +5,26 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 import CardStatisticsVerticalComponent from 'src/@core/components/card-statistics/card-stats-vertical'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import Table from 'src/views/dashboard/Table'
 import Trophy from 'src/views/dashboard/Trophy'
 import TotalEarning from 'src/views/dashboard/TotalEarning'
 import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
+import { withAuth } from 'src/hooks/withAuth'
+import React from 'react'
+import { Session } from 'next-auth'
 
-const Dashboard = () => {
+const Dashboard: React.FC<{
+  session: Session
+}> = ({ session }) => {
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Table session={session} />
+        </Grid>
         <Grid item xs={12} md={4}>
           <Trophy />
         </Grid>
@@ -85,4 +94,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default withAuth(Dashboard)
