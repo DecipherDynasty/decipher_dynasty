@@ -16,7 +16,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/dashboard'
     },
     {
-      title: 'Manage Events',
+      title: 'Create Event',
       icon: CalendarOutline,
       path: '/events'
     },

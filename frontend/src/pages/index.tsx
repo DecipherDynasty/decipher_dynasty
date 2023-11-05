@@ -5,7 +5,6 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 import CardStatisticsVerticalComponent from 'src/@core/components/card-statistics/card-stats-vertical'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
-import Table from 'src/views/dashboard/Table'
 import Trophy from 'src/views/dashboard/Trophy'
 import TotalEarning from 'src/views/dashboard/TotalEarning'
 import StatisticsCard from 'src/views/dashboard/StatisticsCard'
@@ -80,9 +79,6 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} md={12} lg={8}>
           <DepositWithdraw />
-        </Grid>
-        <Grid item xs={12}>
-          <Table />
         </Grid>
       </Grid>
     </ApexChartWrapper>

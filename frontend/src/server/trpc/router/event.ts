@@ -4,6 +4,10 @@ import { organisationCollection } from 'src/server/db/collections/organisationCo
 import { eventCollection } from 'src/server/db/collections/eventCollection'
 import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
 import { firestore } from 'firebase-admin'
+import {
+  getEventsForOrganisationInputSchema,
+  getEventsForOrganisationOutputSchema
+} from 'src/models/schema/getEventsForOrganisationSchema'
 
 /**
  * The following procedure will be called when an organisation or user
@@ -28,11 +32,36 @@ const createEventProcedure = protectedProcedure.input(createEventFormSchema).mut
     eventName: input.eventName,
     eventStartDate: firestore.Timestamp.fromDate(input.eventStartDate),
     intendedAmountToRaise: input.intendedAmountToRaise,
-    isVerified: false,
+    status: 'pending',
     organisationId: ctx.session.user.id
   })
 })
 
+/**
+ * The following procedure is used to get all the events that the organisation has submitted.
+ * This will be used to display on the table in the dashboard.
+ */
+const getEventsForOrganisation = protectedProcedure
+  .input(getEventsForOrganisationInputSchema)
+  .output(getEventsForOrganisationOutputSchema)
+  .query(async ({ input }) => {
+    const events = await eventCollection.where('organisationId', '==', input.id).orderBy('eventStartDate').get()
+
+    return events.docs.map(eventSnapshot => {
+      const event = eventSnapshot.data()
+      const id = eventSnapshot.id
+
+      return {
+        eventEndDate: event.eventEndDate.toDate(),
+        eventName: event.eventName,
+        eventStartDate: event.eventStartDate.toDate(),
+        id,
+        status: event.status
+      }
+    })
+  })
+
 export const eventRouter = router({
-  createEvent: createEventProcedure
+  createEvent: createEventProcedure,
+  getEventsForOrganisation
 })

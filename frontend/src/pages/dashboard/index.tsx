@@ -13,11 +13,18 @@ import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import { withAuth } from 'src/hooks/withAuth'
+import React from 'react'
+import { Session } from 'next-auth'
 
-const Dashboard = () => {
+const Dashboard: React.FC<{
+  session: Session
+}> = ({ session }) => {
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Table session={session} />
+        </Grid>
         <Grid item xs={12} md={4}>
           <Trophy />
         </Grid>
@@ -81,9 +88,6 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} md={12} lg={8}>
           <DepositWithdraw />
-        </Grid>
-        <Grid item xs={12}>
-          <Table />
         </Grid>
       </Grid>
     </ApexChartWrapper>
