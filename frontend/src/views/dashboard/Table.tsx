@@ -8,17 +8,11 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import { trpc } from 'src/utils/trpc'
-import { useSession } from 'next-auth/react'
-import { Session } from 'next-auth'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 
-const DashboardTable: React.FC<{
-  session: Session
-}> = () => {
-  const { data: session } = useSession()
-  const { data, isLoading } = trpc.event.getEventsForOrganisation.useQuery({
-    id: session?.user?.id as string
-  })
+const DashboardTable = () => {
+  const { data, isLoading } = trpc.event.getEventsForOrganisation.useQuery()
 
   return (
     <Card>
@@ -38,7 +32,9 @@ const DashboardTable: React.FC<{
             ) : (
               data?.map(event => (
                 <TableRow hover key={event.id} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
-                  <TableCell>{event.eventName}</TableCell>
+                  <TableCell>
+                    <Link href={`/events/${event.id}`}>{event.eventName}</Link>
+                  </TableCell>
                   <TableCell>{dayjs(event.eventStartDate).format('D MMMM YYYY')}</TableCell>
                   <TableCell>{dayjs(event.eventEndDate).format('D MMMM YYYY')}</TableCell>
                   <TableCell>
@@ -50,13 +46,7 @@ const DashboardTable: React.FC<{
                           ? 'Pending Approval'
                           : 'Rejected'
                       }
-                      color={
-                        event.status === 'approved'
-                          ? 'success'
-                          : event.status === 'pending'
-                          ? 'info'
-                          : 'error'
-                      }
+                      color={event.status === 'approved' ? 'success' : event.status === 'pending' ? 'info' : 'error'}
                       sx={{
                         height: 24,
                         fontSize: '0.75rem',

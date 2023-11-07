@@ -9,6 +9,7 @@ export type Event = {
   intendedAmountToRaise: number
   status: 'approved' | 'rejected' | 'pending'
   organisationId: string
+  photoUrl: string
 }
 
 export const eventCollection = db.collection('events').withConverter({
@@ -20,7 +21,8 @@ export const eventCollection = db.collection('events').withConverter({
     eventStartDate: event.eventStartDate,
     intendedAmountToRaise: event.intendedAmountToRaise,
     status: event.status,
-    organisationId: event.organisationId
+    organisationId: event.organisationId,
+    photoUrl: event.photoUrl
   }),
   fromFirestore: (snapshot: FirebaseFirestore.QueryDocumentSnapshot) => snapshot.data() as Event
 })
