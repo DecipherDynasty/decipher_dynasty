@@ -11,8 +11,15 @@ import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const Dashboard = () => {
+  const router = useRouter()
+  const { data } = useSession()
+
+  if (data) router.push('/dashboard')
+
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>

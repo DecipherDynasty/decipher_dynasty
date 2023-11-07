@@ -14,6 +14,22 @@ import DatePicker from 'react-datepicker'
 import { trpc } from 'src/utils/trpc'
 import { z } from 'zod'
 import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
+import CloudUpload from 'mdi-material-ui/CloudUpload'
+import { styled } from '@mui/material/styles'
+import { storage } from 'src/utils/firebase'
+import { type StorageReference, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1
+})
 
 const StartDateInput = forwardRef((props, ref) => {
   return <TextField fullWidth {...props} inputRef={ref} label='Start Date' autoComplete='off' />
@@ -31,6 +47,7 @@ const VerificationForm = () => {
   const [endDate, setEndDate] = useState<Date | null | undefined>(null)
   const [description, setDescription] = useState('')
   const [intendedAmountToRaise, setIntendedAmountToRaise] = useState(0)
+  const [image, setImage] = useState<File>()
   const [toast, setToast] = useState({
     shouldShow: false,
     message: '',
@@ -65,10 +82,17 @@ const VerificationForm = () => {
           eventLocation: location,
           eventName,
           eventStartDate: startDate,
-          intendedAmountToRaise: intendedAmountToRaise
+          intendedAmountToRaise: intendedAmountToRaise,
+          photoUrl: ''
         }
 
         const parsed = createEventFormSchema.parse(input)
+
+        if (image) {
+          const reference: StorageReference = ref(storage, `images/${eventName}`)
+          await uploadBytes(reference, image)
+          parsed.photoUrl = await getDownloadURL(reference)
+        }
 
         await mutateAsync(parsed)
 
@@ -93,7 +117,7 @@ const VerificationForm = () => {
         })
       }
     },
-    [eventName, mutateAsync, location, endDate, startDate, intendedAmountToRaise, description]
+    [eventName, mutateAsync, location, endDate, startDate, intendedAmountToRaise, description, image]
   )
 
   return (
@@ -157,6 +181,20 @@ const VerificationForm = () => {
                 multiline
                 label='Description'
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Button component='label' variant='contained' startIcon={<CloudUpload />}>
+                Upload file
+                <VisuallyHiddenInput
+                  accept='image/*'
+                  type='file'
+                  onChange={e => {
+                    if (!e.target.files) return
+                    const file: File = e.target.files[0]
+                    setImage(file)
+                  }}
+                />
+              </Button>
             </Grid>
           </Grid>
         </CardContent>

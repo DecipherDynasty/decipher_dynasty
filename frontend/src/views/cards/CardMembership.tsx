@@ -24,7 +24,14 @@ const CardMembership: React.FC<{
   eventName?: string
   intendedAmountToRaise?: number
 }> = ({ eventName, eventDescription, intendedAmountToRaise }) => {
-  // Activate the metamask wallet here.
+
+  /**
+   * This method will attempt to upload the data into the chain.
+   * If it is successful, we will get the address to store in the
+   * database so that we can reference it in the future.
+   * 
+   * TODO: Pending by Tze Loong
+   */
   const approveEvent = useCallback(async () => {
     if (typeof window.ethereum === 'undefined') {
       alert('You do not have metamask installed')

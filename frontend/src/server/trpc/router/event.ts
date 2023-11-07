@@ -34,7 +34,8 @@ const createEvent = protectedProcedure.input(createEventFormSchema).mutation(asy
     eventStartDate: firestore.Timestamp.fromDate(input.eventStartDate),
     intendedAmountToRaise: input.intendedAmountToRaise,
     status: 'pending',
-    organisationId: ctx.session.user.id
+    organisationId: ctx.session.user.id,
+    photoUrl: input.photoUrl
   })
 })
 
@@ -113,7 +114,8 @@ const getIndividualEvent = publicProcedure
       eventLocation: event.eventLocation,
       eventName: event.eventName,
       intendedAmountToRaise: event.intendedAmountToRaise,
-      status: event.status
+      status: event.status,
+      photoUrl: event.photoUrl
     }
   })
 

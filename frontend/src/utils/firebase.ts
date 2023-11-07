@@ -1,5 +1,6 @@
 import { initializeApp, getApps, FirebaseApp, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
+import { getStorage } from 'firebase/storage'
 
 let app: FirebaseApp
 
@@ -19,3 +20,4 @@ if (!getApps().length) {
 }
 
 export const auth = getAuth(app)
+export const storage = getStorage(app)

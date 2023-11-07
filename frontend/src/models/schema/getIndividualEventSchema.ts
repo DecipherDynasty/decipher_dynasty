@@ -10,5 +10,6 @@ export const getIndividualEventOutputSchema = z.object({
   eventLocation: z.string(),
   eventName: z.string(),
   intendedAmountToRaise: z.number(),
-  status: z.enum(['approved', 'pending', 'rejected'])
+  status: z.enum(['approved', 'pending', 'rejected']),
+  photoUrl: z.string()
 })

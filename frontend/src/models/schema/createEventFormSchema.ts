@@ -11,5 +11,6 @@ export const createEventFormSchema = z.object({
   eventLocation: z.string(),
   eventDescription: z.string(),
   eventName: z.string(),
-  intendedAmountToRaise: z.number().positive()
+  intendedAmountToRaise: z.number().positive(),
+  photoUrl: z.string()
 })
