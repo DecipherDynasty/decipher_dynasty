@@ -9,6 +9,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import { trpc } from 'src/utils/trpc'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 
 const DashboardTable = () => {
   const { data, isLoading } = trpc.event.getEventsForOrganisation.useQuery()
@@ -31,7 +32,9 @@ const DashboardTable = () => {
             ) : (
               data?.map(event => (
                 <TableRow hover key={event.id} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
-                  <TableCell>{event.eventName}</TableCell>
+                  <TableCell>
+                    <Link href={`/events/${event.id}`}>{event.eventName}</Link>
+                  </TableCell>
                   <TableCell>{dayjs(event.eventStartDate).format('D MMMM YYYY')}</TableCell>
                   <TableCell>{dayjs(event.eventEndDate).format('D MMMM YYYY')}</TableCell>
                   <TableCell>

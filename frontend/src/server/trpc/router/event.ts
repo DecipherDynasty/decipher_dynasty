@@ -1,10 +1,14 @@
-import { protectedProcedure, router } from '../trpc'
+import { protectedProcedure, router, publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 import { organisationCollection } from 'src/server/db/collections/organisationCollection'
 import { Event, eventCollection } from 'src/server/db/collections/eventCollection'
 import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
 import { firestore } from 'firebase-admin'
 import { getEventsForOrganisationOutputSchema } from 'src/models/schema/getEventsForOrganisationSchema'
+import {
+  getIndividualEventInputSchema,
+  getIndividualEventOutputSchema
+} from 'src/models/schema/getIndividualEventSchema'
 
 /**
  * The following procedure will be called when an organisation or user
@@ -36,7 +40,6 @@ const createEvent = protectedProcedure.input(createEventFormSchema).mutation(asy
 
 /**
  * Depending on the permission of the user, the dashboard table will vary.
- *
  * If the user is admin, he should get all the events that have yet to be approved.
  * We do not need to worry about the approved event because it is approved and uploaded
  * onto the chain.
@@ -80,7 +83,42 @@ const getEventsForOrganisation = protectedProcedure
     })
   })
 
+/**
+ * If the event has not been approved, only the admin and organisation who uploaded it can view it.
+ * Otherwise, anyone can view it because we will be obtaining the data from the chain instead.
+ */
+const getIndividualEvent = publicProcedure
+  .input(getIndividualEventInputSchema)
+  .output(getIndividualEventOutputSchema)
+  .query(async ({ ctx, input }) => {
+    const eventSnapshot = await eventCollection.doc(input.eventId).get()
+    if (!eventSnapshot.exists) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No event found'
+      })
+    }
+
+    const event = eventSnapshot.data() as Event
+    if (event.status !== 'approved' && !ctx.session) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You do not have permission to view this event'
+      })
+    }
+
+    return {
+      eventDescription: event.eventDescription,
+      eventEndDate: event.eventEndDate.toDate(),
+      eventLocation: event.eventLocation,
+      eventName: event.eventName,
+      intendedAmountToRaise: event.intendedAmountToRaise,
+      status: event.status
+    }
+  })
+
 export const eventRouter = router({
   createEvent,
-  getEventsForOrganisation
+  getEventsForOrganisation,
+  getIndividualEvent
 })

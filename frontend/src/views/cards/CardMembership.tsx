@@ -1,4 +1,3 @@
-// ** MUI Imports
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
@@ -7,12 +6,11 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box, { BoxProps } from '@mui/material/Box'
 import CardContent from '@mui/material/CardContent'
-
-// ** Icons Imports
 import TrendingUp from 'mdi-material-ui/TrendingUp'
 import StarOutline from 'mdi-material-ui/StarOutline'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
+import React, { useCallback } from 'react'
 
 // Styled Box component
 const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
@@ -21,21 +19,32 @@ const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-const CardMembership = () => {
+const CardMembership: React.FC<{
+  eventDescription?: string
+  eventName?: string
+  intendedAmountToRaise?: number
+}> = ({ eventName, eventDescription, intendedAmountToRaise }) => {
+  // Activate the metamask wallet here.
+  const approveEvent = useCallback(async () => {
+    if (typeof window.ethereum === 'undefined') {
+      alert('You do not have metamask installed')
+
+      return
+    }
+
+    // Get all the accounts associated with the metamask
+    await window.ethereum.request({ method: 'eth_requestAccounts' })
+  }, [])
+
   return (
     <Card>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={7}>
           <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5.75, 6.25)} !important` }}>
             <Typography variant='h6' sx={{ marginBottom: 3.5 }}>
-              Lifetime Membership
+              {eventName}
             </Typography>
-            <Typography variant='body2'>
-              Here, I focus on a range of items and features that we use in life without giving them a second thought
-              such as Coca Cola, body muscles and holding ones own breath. Though, most of these notes are not
-              fundamentally necessary, they are such that you can use them for a good laugh, at a drinks party or for
-              picking up women or men.
-            </Typography>
+            <Typography variant='body2'>{eventDescription}</Typography>
             <Divider sx={{ marginTop: 6.5, marginBottom: 6.75 }} />
             <Grid container spacing={4}>
               <Grid item xs={12} sm={5}>
@@ -84,7 +93,7 @@ const CardMembership = () => {
               <Box sx={{ mb: 3.5, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
                 <Typography variant='h6'>$</Typography>
                 <Typography variant='h6' sx={{ lineHeight: 1, fontWeight: 600, fontSize: '3.75rem !important' }}>
-                  899
+                  {intendedAmountToRaise?.toString()}
                 </Typography>
                 <Typography variant='h6'>USD</Typography>
               </Box>
@@ -92,7 +101,9 @@ const CardMembership = () => {
                 <span>5 Tips For Offshore</span>
                 <span>Software Development</span>
               </Typography>
-              <Button variant='contained'>Contact Now</Button>
+              <Button variant='contained' onClick={approveEvent}>
+                Contact Now
+              </Button>
             </Box>
           </CardContent>
         </Grid>
