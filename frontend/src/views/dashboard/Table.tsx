@@ -8,17 +8,10 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import { trpc } from 'src/utils/trpc'
-import { useSession } from 'next-auth/react'
-import { Session } from 'next-auth'
 import dayjs from 'dayjs'
 
-const DashboardTable: React.FC<{
-  session: Session
-}> = () => {
-  const { data: session } = useSession()
-  const { data, isLoading } = trpc.event.getEventsForOrganisation.useQuery({
-    id: session?.user?.id as string
-  })
+const DashboardTable = () => {
+  const { data, isLoading } = trpc.event.getEventsForOrganisation.useQuery()
 
   return (
     <Card>
@@ -50,13 +43,7 @@ const DashboardTable: React.FC<{
                           ? 'Pending Approval'
                           : 'Rejected'
                       }
-                      color={
-                        event.status === 'approved'
-                          ? 'success'
-                          : event.status === 'pending'
-                          ? 'info'
-                          : 'error'
-                      }
+                      color={event.status === 'approved' ? 'success' : event.status === 'pending' ? 'info' : 'error'}
                       sx={{
                         height: 24,
                         fontSize: '0.75rem',
