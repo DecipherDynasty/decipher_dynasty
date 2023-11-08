@@ -24,9 +24,14 @@ const navigation = (): VerticalNavItemsType => {
       sectionTitle: 'Demo'
     },
     {
-      title: 'Cards',
+      title: 'Education',
       icon: AccountCogOutline,
       path: '/cards'
+    },
+    {
+      title: 'Web3',
+      icon: AccountCogOutline,
+      path: './cards-copy'
     }
   ]
 }

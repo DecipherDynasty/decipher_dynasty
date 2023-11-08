@@ -23,7 +23,7 @@ const CardBasic = () => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} sx={{ paddingBottom: 4 }}>
-        <Typography variant='h5'>Types of Scams</Typography>
+        <Typography variant='h5'>Navigating Web3</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <CardImgTop />
@@ -56,25 +56,13 @@ const CardBasic = () => {
         <CardSupport />
       </Grid>
       <Grid item xs={12} sx={{ pb: 4, pt: theme => `${theme.spacing(17.5)} !important` }}>
-        <Typography variant='h5'>Navigation Cards</Typography>
+        <Typography variant='h5'>Real Stories</Typography>
       </Grid>
       <Grid item xs={12} md={6}>
         <CardNavigation />
       </Grid>
       <Grid item xs={12} md={6}>
         <CardNavigationCenter />
-      </Grid>
-      <Grid item xs={12} sx={{ pb: 4, pt: theme => `${theme.spacing(17.5)} !important` }}>
-        <Typography variant='h5'>Solid Cards</Typography>
-      </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <CardTwitter />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <CardFacebook />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <CardLinkedIn />
       </Grid>
     </Grid>
   )

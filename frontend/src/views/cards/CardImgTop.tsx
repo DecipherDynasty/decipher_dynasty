@@ -7,14 +7,17 @@ import CardContent from '@mui/material/CardContent'
 const CardImgTop = () => {
   return (
     <Card>
-      <CardMedia sx={{ height: '14.5625rem' }} image='/images/cards/glass-house.png' />
+      <CardMedia
+        sx={{ height: '14.5625rem' }}
+        image='https://fireapps.io/wp-content/uploads/2020/10/5-best-free-ecommerce-flatform.png'
+      />
       <CardContent>
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
-          Influencing The Influencer
+          E-Commerce Scams
         </Typography>
         <Typography variant='body2'>
-          Cancun is back, better than ever! Over a hundred Mexico resorts have reopened and the state tourism minister
-          predicts Cancun will draw as many visitors in 2006 as it did two years ago.
+          Many of these fake sellers may pose as legitimate online sellers on popular marketplaces, create fake
+          websites, or even place advertisements on social media to build credibility.
         </Typography>
       </CardContent>
     </Card>
