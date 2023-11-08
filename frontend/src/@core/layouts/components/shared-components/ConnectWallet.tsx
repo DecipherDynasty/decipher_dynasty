@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react'
-
+import React from 'react'
 import { useStateContext } from 'src/context'
 
 const ConnectWallet = () => {
-  const { connect, contract } = useStateContext()
+  const { connect } = useStateContext()
 
   return (
     <div>
-      <button onClick={() => connect()}>Connect</button> {/* for metamask */}
+      <button onClick={connect}>Connect</button> {/* for metamask */}
     </div>
   )
 }

@@ -1,22 +1,17 @@
-import React, { useEffect, useContext, createContext } from 'react'
+import React, { useContext, createContext } from 'react'
 
 import {
   useAddress,
   useContract,
   useMetamask,
   useContractWrite,
-  useContractRead,
-  useContractEvents
 } from '@thirdweb-dev/react'
-
-import { ethers } from 'ethers'
 
 const StateContext = createContext()
 
 export const StateContextProvider = ({ children }) => {
   const { contract } = useContract('0x108AC7a5b659d5B2a8b7d8D513c8752EC3eF8481')
 
-  console.log(contract)
 
   const address = useAddress()
   const connect = useMetamask()
@@ -26,10 +21,9 @@ export const StateContextProvider = ({ children }) => {
 
   // 1. issueBusinessCertificate()
 
-  const { mutateAsync: issueBusinessCertificate, isLoading } = useContractWrite(contract, 'issueBusinessCertificate')
+  const { mutateAsync: issueBusinessCertificate } = useContractWrite(contract, 'issueBusinessCertificate')
 
   const issueBusinessCertificateFunction = async form => {
-    // console.log(form);
     const { certificateID, issuanceDate, businessInfo } = form
 
     try {

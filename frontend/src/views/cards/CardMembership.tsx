@@ -11,6 +11,8 @@ import StarOutline from 'mdi-material-ui/StarOutline'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import React, { useCallback } from 'react'
+import { useContract, useContractWrite, useConnect, metamaskWallet } from '@thirdweb-dev/react'
+import dayjs from 'dayjs'
 
 // Styled Box component
 const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
@@ -22,26 +24,29 @@ const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
 const CardMembership: React.FC<{
   eventDescription?: string
   eventName?: string
+  id?: string
   intendedAmountToRaise?: number
-}> = ({ eventName, eventDescription, intendedAmountToRaise }) => {
+}> = ({ eventName, eventDescription, intendedAmountToRaise, id }) => {
+  const { contract } = useContract('0x108AC7a5b659d5B2a8b7d8D513c8752EC3eF8481')
+  const { mutateAsync: issueBusinessCertificate } = useContractWrite(contract, 'issueBusinessCertificate')
+  const connect = useConnect()
+  const metamaskConfig = metamaskWallet()
 
-  /**
-   * This method will attempt to upload the data into the chain.
-   * If it is successful, we will get the address to store in the
-   * database so that we can reference it in the future.
-   * 
-   * TODO: Pending by Tze Loong
-   */
   const approveEvent = useCallback(async () => {
-    if (typeof window.ethereum === 'undefined') {
-      alert('You do not have metamask installed')
+    try {
+      // Connect to the metamask wallet
+      await connect(metamaskConfig)
 
-      return
+      const today = dayjs().toISOString()
+
+      // Attempt to upload the data onto the contract.
+      await issueBusinessCertificate({
+        args: [id, today, eventName]
+      })
+    } catch (e) {
+      alert((e as Error).message)
     }
-
-    // Get all the accounts associated with the metamask
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
-  }, [])
+  }, [issueBusinessCertificate, id, eventName, connect, metamaskConfig])
 
   return (
     <Card>

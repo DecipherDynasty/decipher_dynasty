@@ -113,6 +113,7 @@ const getIndividualEvent = publicProcedure
       eventEndDate: event.eventEndDate.toDate(),
       eventLocation: event.eventLocation,
       eventName: event.eventName,
+      id: eventSnapshot.id,
       intendedAmountToRaise: event.intendedAmountToRaise,
       status: event.status,
       photoUrl: event.photoUrl
