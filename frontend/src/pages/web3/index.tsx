@@ -3,21 +3,21 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Demo Components Imports
-import CardUser from 'src/views/cards/CardUser'
-import CardImgTop from 'src/views/cards/CardImgTop'
-import CardMobile from 'src/views/cards/CardMobile'
-import CardSupport from 'src/views/cards/CardSupport'
-import CardTwitter from 'src/views/cards/CardTwitter'
-import CardFacebook from 'src/views/cards/CardFacebook'
-import CardLinkedIn from 'src/views/cards/CardLinkedIn'
-import CardAppleWatch from 'src/views/cards/CardAppleWatch'
-import CardMembership from 'src/views/cards/CardMembership'
-import CardInfluencer from 'src/views/cards/CardInfluencer'
-import CardNavigation from 'src/views/cards/CardNavigation'
-import CardWithCollapse from 'src/views/cards/CardWithCollapse'
-import CardVerticalRatings from 'src/views/cards/CardVerticalRatings'
-import CardNavigationCenter from 'src/views/cards/CardNavigationCenter'
-import CardHorizontalRatings from 'src/views/cards/CardHorizontalRatings'
+import CardUser2 from 'src/views/cards2/CardUser'
+import CardImgTop from 'src/views/cards2/CardImgTop'
+import CardMobile from 'src/views/cards2/CardMobile'
+import CardSupport from 'src/views/cards2/CardSupport'
+import CardTwitter from 'src/views/cards2/CardTwitter'
+import CardFacebook from 'src/views/cards2/CardFacebook'
+import CardLinkedIn from 'src/views/cards2/CardLinkedIn'
+import CardAppleWatch from 'src/views/cards2/CardAppleWatch'
+import CardMembership from 'src/views/cards2/CardMembership'
+import CardInfluencer from 'src/views/cards2/CardInfluencer'
+import CardNavigation from 'src/views/cards2/CardNavigation'
+import CardWithCollapse from 'src/views/cards2/CardWithCollapse'
+import CardVerticalRatings from 'src/views/cards2/CardVerticalRatings'
+import CardNavigationCenter from 'src/views/cards2/CardNavigationCenter'
+import CardHorizontalRatings from 'src/views/cards2/CardHorizontalRatings'
 
 const CardBasic = () => {
   return (
@@ -29,7 +29,7 @@ const CardBasic = () => {
         <CardImgTop />
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
-        <CardUser />
+        <CardUser2 />
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <CardWithCollapse />
@@ -56,13 +56,16 @@ const CardBasic = () => {
         <CardSupport />
       </Grid>
       <Grid item xs={12} sx={{ pb: 4, pt: theme => `${theme.spacing(17.5)} !important` }}>
-        <Typography variant='h5'>Real Stories</Typography>
+        <Typography variant='h5'>Learn More</Typography>
       </Grid>
-      <Grid item xs={12} md={6}>
-        <CardNavigation />
+      <Grid item xs={12} sm={6} md={4}>
+        <CardTwitter />
       </Grid>
-      <Grid item xs={12} md={6}>
-        <CardNavigationCenter />
+      <Grid item xs={12} sm={6} md={4}>
+        <CardFacebook />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4}>
+        <CardLinkedIn />
       </Grid>
     </Grid>
   )

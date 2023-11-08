@@ -21,17 +21,17 @@ const navigation = (): VerticalNavItemsType => {
       path: '/account-settings'
     },
     {
-      sectionTitle: 'Demo'
+      sectionTitle: 'Education'
     },
     {
-      title: 'Education',
+      title: 'Scams',
       icon: AccountCogOutline,
-      path: '/cards'
+      path: '/scams'
     },
     {
       title: 'Web3',
       icon: AccountCogOutline,
-      path: './cards-copy'
+      path: './web3'
     }
   ]
 }
