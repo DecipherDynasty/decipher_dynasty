@@ -19,7 +19,7 @@ const CardUser = () => {
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
           Pro
         </Typography>
-        <Typography variant='body2' sx={{ marginBottom: 5 }}>
+        <Typography variant='body2' >
           For business that require higher certificate volume and acess to premium services
         </Typography>
         <Button variant='contained' sx={{ margin: 7 }}>
