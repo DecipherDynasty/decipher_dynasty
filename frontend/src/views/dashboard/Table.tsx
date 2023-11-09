@@ -20,6 +20,7 @@ const DashboardTable = () => {
         <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
           <TableHead>
             <TableRow>
+              <TableCell>Organisation Name</TableCell>
               <TableCell>Event Name</TableCell>
               <TableCell>Start Date</TableCell>
               <TableCell>End Date</TableCell>
@@ -32,6 +33,7 @@ const DashboardTable = () => {
             ) : (
               data?.map(event => (
                 <TableRow hover key={event.id} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
+                  <TableCell>{event.organisationName}</TableCell>
                   <TableCell>
                     <Link href={`/events/${event.id}`}>{event.eventName}</Link>
                   </TableCell>

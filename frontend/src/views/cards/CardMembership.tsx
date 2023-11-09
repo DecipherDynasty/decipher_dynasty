@@ -26,9 +26,10 @@ const CardMembership: React.FC<{
   canApprove?: boolean
   id?: string
   intendedAmountToRaise?: number
-}> = ({ eventName, eventDescription, intendedAmountToRaise, id, canApprove }) => {
+  organisationId?: string
+}> = ({ eventName, eventDescription, intendedAmountToRaise, id, canApprove, organisationId }) => {
   const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS)
-  const { mutateAsync: issueBusinessCertificate } = useContractWrite(contract, 'issueBusinessCertificate')
+  const { mutateAsync: issueCharityCertificate } = useContractWrite(contract, 'issueCharityCertificate')
 
   const approveEvent = useCallback(async () => {
     try {
@@ -38,13 +39,13 @@ const CardMembership: React.FC<{
 
       const today = dayjs().toISOString()
 
-      await issueBusinessCertificate({
-        args: [id, today, id]
+      await issueCharityCertificate({
+        args: [id, today, organisationId]
       })
     } catch (e) {
       alert((e as Error).message)
     }
-  }, [id, issueBusinessCertificate, canApprove])
+  }, [id, issueCharityCertificate, canApprove, organisationId])
 
   return (
     <Card>

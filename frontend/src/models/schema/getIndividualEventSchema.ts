@@ -12,5 +12,6 @@ export const getIndividualEventOutputSchema = z.object({
   eventName: z.string(),
   intendedAmountToRaise: z.number(),
   status: z.enum(['approved', 'pending', 'rejected']),
+  organisationId: z.string(),
   photoUrl: z.string()
 })

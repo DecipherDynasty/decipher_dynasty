@@ -61,27 +61,34 @@ const getEventsForOrganisation = protectedProcedure
     const organisation = organisationSnapshot.data()
 
     // Populate the events table.
-    let queryBuilder: FirebaseFirestore.Query<Event>
-    if (organisation?.permission === 'admin') {
-      queryBuilder = eventCollection.where('status', '!=', 'approved').where('eventStartTime', '>=', new Date())
-    } else {
+    let queryBuilder: FirebaseFirestore.Query<Event> = eventCollection
+    if (organisation?.permission !== 'admin') {
       queryBuilder = eventCollection.where('organisationId', '==', organisationSnapshot.id)
     }
 
     const events = await queryBuilder.orderBy('eventStartDate').get()
 
-    return events.docs.map(eventSnapshot => {
-      const event = eventSnapshot.data()
-      const id = eventSnapshot.id
+    return await Promise.all(
+      events.docs.map(async eventSnapshot => {
+        const event = eventSnapshot.data()
+        const id = eventSnapshot.id
 
-      return {
-        eventEndDate: event.eventEndDate.toDate(),
-        eventName: event.eventName,
-        eventStartDate: event.eventStartDate.toDate(),
-        id,
-        status: event.status
-      }
-    })
+        const organisationId = event.organisationId
+        const organisation = await organisationCollection
+          .doc(organisationId)
+          .get()
+          .then(org => org.data())
+
+        return {
+          eventEndDate: event.eventEndDate.toDate(),
+          eventName: event.eventName,
+          eventStartDate: event.eventStartDate.toDate(),
+          id,
+          organisationName: organisation?.name as string,
+          status: event.status
+        }
+      })
+    )
   })
 
 /**
@@ -127,6 +134,7 @@ const getIndividualEvent = publicProcedure
       eventLocation: event.eventLocation,
       eventName: event.eventName,
       intendedAmountToRaise: event.intendedAmountToRaise,
+      organisationId: event.organisationId,
       status: event.status,
       photoUrl: event.photoUrl
     }
