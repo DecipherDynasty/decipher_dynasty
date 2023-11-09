@@ -11,24 +11,21 @@ import CardActions from '@mui/material/CardActions'
 const CardVerticalRatings = () => {
   return (
     <Card>
-      <CardHeader title='The Best Answers' />
+      <CardHeader title='Phishing Scams' />
       <CardContent>
-        <Box sx={{ mb: 5, display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
-          <Rating readOnly value={5} name='read-only' sx={{ marginRight: 2 }} />
-          <Typography variant='body2'>5 Star | 98 reviews</Typography>
-        </Box>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}></Box>
         <Typography variant='body2' sx={{ marginBottom: 3.25 }}>
-          If you are looking for a new way to promote your business that won’t cost you more money, maybe printing is
-          one of the options you won’t resist.
+          You receive a call, text or email soliciting personal information in order to claim a prize, secure your
+          online accounts or to help investigate fraudulent transactions.
         </Typography>
         <Typography variant='body2'>
-          Printing is a widely use process in making printed materials that are used for advertising. It become fast,
-          easy and simple. If you want your promotional material to be an eye-catching.
+          Fake websites are created to look identical to the official sites of organisations or banks, but with a
+          slightly different web address. If you input your personal details, PINs or OTPs in these fake websites, your
+          information and money are at risk of being stolen by criminals.
         </Typography>
       </CardContent>
       <CardActions className='card-action-dense'>
-        <Button>Location</Button>
-        <Button>Reviews</Button>
+        <Button>How to stay safe</Button>
       </CardActions>
     </Card>
   )
