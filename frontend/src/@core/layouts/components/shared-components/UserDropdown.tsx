@@ -1,10 +1,6 @@
-// ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react'
-
-// ** Next Import
+'use client'
+import { useState, SyntheticEvent, Fragment, useCallback } from 'react'
 import { useRouter } from 'next/router'
-
-// ** MUI Imports
 import Box from '@mui/material/Box'
 import Menu from '@mui/material/Menu'
 import Badge from '@mui/material/Badge'
@@ -13,17 +9,12 @@ import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-
-// ** Icons Imports
-import CogOutline from 'mdi-material-ui/CogOutline'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
+import WalletOutline from 'mdi-material-ui/WalletOutline'
+import { useMetamask, useAddress, useDisconnect } from '@thirdweb-dev/react'
+import { signOut } from 'next-auth/react'
 
-// ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
   width: 8,
   height: 8,
@@ -33,11 +24,33 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 }))
 
 const UserDropdown = () => {
-  // ** States
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
-
-  // ** Hooks
   const router = useRouter()
+
+  // Chain hooks
+  const connect = useMetamask()
+  const disconnect = useDisconnect()
+  const address = useAddress()
+
+  /**
+   * The signout logic of our app. When the user clicks on it, he will disconnect from
+   * the wallet if he is connected in the first place, and signout of the next auth.
+   */
+  const signout = useCallback(async () => {
+    try {
+      // If the user has connected his wallet, we disconnect it first prior to logout from out system.
+      if (address !== undefined) await disconnect()
+
+      // We sign the user out of our system
+      await signOut({
+        redirect: false
+      })
+
+      router.push('/')
+    } catch (e) {
+      alert((e as Error).message)
+    }
+  }, [])
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -106,45 +119,33 @@ const UserDropdown = () => {
           </Box>
         </Box>
         <Divider sx={{ mt: 0, mb: 1 }} />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
+        {address ? (
           <Box sx={styles}>
-            <AccountOutline sx={{ marginRight: 2 }} />
-            Profile
+            <WalletOutline sx={{ marginRight: 2 }} />
+            Connected to {address}
           </Box>
-        </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <EmailOutline sx={{ marginRight: 2 }} />
-            Inbox
-          </Box>
-        </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <MessageOutline sx={{ marginRight: 2 }} />
-            Chat
-          </Box>
-        </MenuItem>
-        <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <CogOutline sx={{ marginRight: 2 }} />
-            Settings
-          </Box>
-        </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <CurrencyUsd sx={{ marginRight: 2 }} />
-            Pricing
-          </Box>
-        </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <HelpCircleOutline sx={{ marginRight: 2 }} />
-            FAQ
-          </Box>
-        </MenuItem>
-        <Divider />
-        <MenuItem sx={{ py: 2 }} onClick={() => handleDropdownClose('/pages/login')}>
+        ) : (
+          <MenuItem
+            sx={{ p: 0 }}
+            onClick={async e => {
+              try {
+                e.preventDefault()
+
+                // If there is already a wallet connected, we should no longer be attempting a connection.
+                if (address) return
+                await connect()
+              } catch (e) {
+                alert((e as Error).message)
+              }
+            }}
+          >
+            <Box sx={styles}>
+              <AccountOutline sx={{ marginRight: 2 }} />
+              Connect
+            </Box>
+          </MenuItem>
+        )}
+        <MenuItem sx={{ py: 2 }} onClick={signout}>
           <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
           Logout
         </MenuItem>
