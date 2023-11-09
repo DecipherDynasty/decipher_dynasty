@@ -56,12 +56,12 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Partnerships',
       icon: AccountMultipleOutline,
-      path: './web3'
+      path: './partnerships'
     },
     {
       title: 'FAQs',
       icon: FrequentlyAskedQuestions,
-      path: './web3'
+      path: './faqs'
     }
   ]
 }
