@@ -1,6 +1,6 @@
 import { protectedProcedure, router, publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
-import { organisationCollection } from 'src/server/db/collections/organisationCollection'
+import { Organisation, organisationCollection } from 'src/server/db/collections/organisationCollection'
 import { Event, eventCollection } from 'src/server/db/collections/eventCollection'
 import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
 import { firestore } from 'firebase-admin'
@@ -9,6 +9,7 @@ import {
   getIndividualEventInputSchema,
   getIndividualEventOutputSchema
 } from 'src/models/schema/getIndividualEventSchema'
+import { approveEventSchema } from 'src/models/schema/approveEventSchema'
 
 /**
  * The following procedure will be called when an organisation or user
@@ -61,27 +62,34 @@ const getEventsForOrganisation = protectedProcedure
     const organisation = organisationSnapshot.data()
 
     // Populate the events table.
-    let queryBuilder: FirebaseFirestore.Query<Event>
-    if (organisation?.permission === 'admin') {
-      queryBuilder = eventCollection.where('status', '!=', 'approved').where('eventStartTime', '>=', new Date())
-    } else {
+    let queryBuilder: FirebaseFirestore.Query<Event> = eventCollection
+    if (organisation?.permission !== 'admin') {
       queryBuilder = eventCollection.where('organisationId', '==', organisationSnapshot.id)
     }
 
     const events = await queryBuilder.orderBy('eventStartDate').get()
 
-    return events.docs.map(eventSnapshot => {
-      const event = eventSnapshot.data()
-      const id = eventSnapshot.id
+    return await Promise.all(
+      events.docs.map(async eventSnapshot => {
+        const event = eventSnapshot.data()
+        const id = eventSnapshot.id
 
-      return {
-        eventEndDate: event.eventEndDate.toDate(),
-        eventName: event.eventName,
-        eventStartDate: event.eventStartDate.toDate(),
-        id,
-        status: event.status
-      }
-    })
+        const organisationId = event.organisationId
+        const organisation = await organisationCollection
+          .doc(organisationId)
+          .get()
+          .then(org => org.data())
+
+        return {
+          eventEndDate: event.eventEndDate.toDate(),
+          eventName: event.eventName,
+          eventStartDate: event.eventStartDate.toDate(),
+          id,
+          organisationName: organisation?.name as string,
+          status: event.status
+        }
+      })
+    )
   })
 
 /**
@@ -108,18 +116,63 @@ const getIndividualEvent = publicProcedure
       })
     }
 
+    let canApprove: boolean = false
+    if (ctx.session && ctx.session.user) {
+      const organisation = await organisationCollection.doc(ctx.session.user.id).get()
+      if (!organisation.exists) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Invalid user'
+        })
+      }
+      canApprove = organisation.data()?.permission === 'admin' && event.status === 'pending'
+    }
+
     return {
+      canApprove,
       eventDescription: event.eventDescription,
       eventEndDate: event.eventEndDate.toDate(),
       eventLocation: event.eventLocation,
       eventName: event.eventName,
       intendedAmountToRaise: event.intendedAmountToRaise,
+      organisationId: event.organisationId,
       status: event.status,
       photoUrl: event.photoUrl
     }
   })
 
+const approveEvent = protectedProcedure.input(approveEventSchema).mutation(async ({ ctx, input }) => {
+  const eventSnapshot = await eventCollection.doc(input.eventId).get()
+  if (!eventSnapshot.exists) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'The event cannot be found'
+    })
+  }
+
+  const organisationSnapshot = await organisationCollection.doc(ctx.session.user.id).get()
+  if (!organisationSnapshot.exists) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Invalid user'
+    })
+  }
+
+  const organisation = organisationSnapshot.data() as Organisation
+  if (organisation.permission !== 'admin') {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'No administrative access'
+    })
+  }
+
+  await eventSnapshot.ref.update({
+    status: 'approved'
+  })
+})
+
 export const eventRouter = router({
+  approveEvent,
   createEvent,
   getEventsForOrganisation,
   getIndividualEvent

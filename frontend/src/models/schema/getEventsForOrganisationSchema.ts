@@ -10,6 +10,7 @@ export const getEventsForOrganisationOutputSchema = z.array(
     eventName: z.string(),
     eventStartDate: z.date(),
     id: z.string(),
+    organisationName: z.string(),
     status: z.enum(['approved', 'rejected', 'pending'])
   })
 )

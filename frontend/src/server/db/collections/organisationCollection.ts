@@ -16,7 +16,7 @@ export const organisationCollection = db.collection('organisations').withConvert
   toFirestore: (organisation: Organisation) => ({
     contactNumber: organisation.contactNumber,
     email: organisation.email,
-    fullName: organisation.name,
+    name: organisation.name,
     permission: organisation.permission
   }),
   fromFirestore: (snapshot: FirebaseFirestore.QueryDocumentSnapshot) => snapshot.data() as Organisation

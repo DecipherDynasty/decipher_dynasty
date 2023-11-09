@@ -10,10 +10,11 @@ import TrendingUp from 'mdi-material-ui/TrendingUp'
 import StarOutline from 'mdi-material-ui/StarOutline'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
-import CardMedia from '@mui/material/CardMedia'
 import React, { useCallback } from 'react'
+import { useContract, useContractWrite } from '@thirdweb-dev/react'
+import dayjs from 'dayjs'
+import { trpc } from 'src/utils/trpc'
 
-// Styled Box component
 const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     borderRight: `1px solid ${theme.palette.divider}`
@@ -23,47 +24,67 @@ const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
 const CardMembership: React.FC<{
   eventDescription?: string
   eventName?: string
+  canApprove?: boolean
+  id?: string
   intendedAmountToRaise?: number
-}> = ({ eventName, eventDescription, intendedAmountToRaise }) => {
-  /**
-   * This method will attempt to upload the data into the chain.
-   * If it is successful, we will get the address to store in the
-   * database so that we can reference it in the future.
-   *
-   * TODO: Pending by Tze Loong
-   */
+  organisationId?: string
+}> = ({ eventName, eventDescription, intendedAmountToRaise, id, canApprove, organisationId }) => {
+  const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS)
+  const { mutateAsync: approveEventFunction } = trpc.event.approveEvent.useMutation()
+  const { mutateAsync: issueBusinessCertificate } = useContractWrite(contract, 'issueBusinessCertificate')
+
   const approveEvent = useCallback(async () => {
-    if (typeof window.ethereum === 'undefined') {
-      alert('You do not have metamask installed')
+    try {
+      if (typeof window.ethereum === 'undefined') throw Error('You do not have metamask installed')
 
-      return
+      if (!canApprove) throw new Error('The user has no rights to approve')
+
+      const today = dayjs().toISOString()
+
+      await issueBusinessCertificate({
+        args: [id, today, organisationId]
+      })
+
+      await approveEventFunction({ eventId: id as string })
+    } catch (e) {
+      alert((e as Error).message)
     }
-
-    // Get all the accounts associated with the metamask
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
-  }, [])
+  }, [id, issueBusinessCertificate, canApprove, organisationId, approveEventFunction])
 
   return (
     <Card>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={7}>
           <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5.75, 6.25)} !important` }}>
-            <Typography variant='h6' sx={{ marginBottom: 2.75 }}>
-              Loan Scams
+            <Typography variant='h6' sx={{ marginBottom: 3.5 }}>
+              {eventName}
             </Typography>
-            <Typography variant='body2' sx={{ marginBottom: 2.75 }}>
-              Scammers use online forums and messaging apps to link victims to legitimate looking websites or reach out
-              directly via text messages.
-            </Typography>
-            <Typography variant='body2' sx={{ marginBottom: 2.75 }}>
-              Scammers mimic bank processes by providing a follow-up call after an inquiry is made and use different
-              phone numbers to avoid detection. They also ask for victim’s personal and financial documents to increase
-              legitimacy.
-            </Typography>
-            <Typography variant='body2'>
-              If a victim refuses to continue paying, scammers may turn to threats of violence or harassment via phone
-              calls or WhatsApp messages.
-            </Typography>
+            <Typography variant='body2'>{eventDescription}</Typography>
+            <Divider sx={{ marginTop: 6.5, marginBottom: 6.75 }} />
+            <Grid container spacing={4}>
+              <Grid item xs={12} sm={5}>
+                <StyledBox>
+                  <Box sx={{ mb: 6.75, display: 'flex', alignItems: 'center' }}>
+                    <LockOpenOutline sx={{ color: 'primary.main', marginRight: 2.75 }} fontSize='small' />
+                    <Typography variant='body2'>Full Access</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <AccountOutline sx={{ color: 'primary.main', marginRight: 2.75 }} fontSize='small' />
+                    <Typography variant='body2'>15 Members</Typography>
+                  </Box>
+                </StyledBox>
+              </Grid>
+              <Grid item xs={12} sm={7}>
+                <Box sx={{ mb: 6.75, display: 'flex', alignItems: 'center' }}>
+                  <StarOutline sx={{ color: 'primary.main', marginRight: 2.75 }} fontSize='small' />
+                  <Typography variant='body2'>Access all Features</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <TrendingUp sx={{ color: 'primary.main', marginRight: 2.75 }} fontSize='small' />
+                  <Typography variant='body2'>Lifetime Free Update</Typography>
+                </Box>
+              </Grid>
+            </Grid>
           </CardContent>
         </Grid>
         <Grid
@@ -79,24 +100,27 @@ const CardMembership: React.FC<{
               textAlign: 'center',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'action.hover'
+              backgroundColor: 'action.hover',
+              padding: theme => `${theme.spacing(18, 5, 16)} !important`
             }}
           >
             <Box>
-              <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img
-                  width={250}
-                  height={270}
-                  src='https://image.cnbcfm.com/api/v1/image/105839350-1554745813020gettyimages-182251222.jpeg?v=1671734667'
-                />
-              </CardContent>
-              {/* <Typography variant='body2' sx={{ mb: 13.75, display: 'flex', flexDirection: 'column' }}>
-                <span>5 Tips For Offshore</span>
-                <span>Software Development</span>
-              </Typography> */}
-              <Button variant='contained' onClick={approveEvent}>
-                Contact Now
-              </Button>
+              <Typography variant='body2' sx={{ mb: 13.75, display: 'flex', flexDirection: 'column' }}>
+                <span>We intend to raise</span>
+              </Typography>
+              <Box sx={{ mb: 3.5, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                <Typography variant='h6'>$</Typography>
+                <Typography variant='h6' sx={{ lineHeight: 1, fontWeight: 600, fontSize: '3.75rem !important' }}>
+                  {intendedAmountToRaise?.toString()}
+                </Typography>
+                <Typography variant='h6'>USD</Typography>
+              </Box>
+
+              {canApprove ? (
+                <Button variant='contained' onClick={approveEvent}>
+                  Approve Event
+                </Button>
+              ) : null}
             </Box>
           </CardContent>
         </Grid>
