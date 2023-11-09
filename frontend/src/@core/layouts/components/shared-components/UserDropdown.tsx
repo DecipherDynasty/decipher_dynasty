@@ -50,7 +50,7 @@ const UserDropdown = () => {
     } catch (e) {
       alert((e as Error).message)
     }
-  }, [address, disconnect, router])
+  }, [])
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
