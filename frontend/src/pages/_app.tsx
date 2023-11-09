@@ -10,13 +10,12 @@ import UserLayout from 'src/layouts/UserLayout'
 import ThemeComponent from 'src/@core/theme/ThemeComponent'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
-import 'react-perfect-scrollbar/dist/css/styles.css'
-import '../../styles/globals.css'
 import { trpc } from 'src/utils/trpc'
 import { SessionProvider } from 'next-auth/react'
 import { type Session } from 'next-auth'
-import { ChainId, ThirdwebProvider } from '@thirdweb-dev/react'
-import { StateContextProvider } from 'src/context'
+import { ThirdwebProvider } from '@thirdweb-dev/react'
+import 'react-perfect-scrollbar/dist/css/styles.css'
+import '../../styles/globals.css'
 
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -47,30 +46,31 @@ const App = (props: ExtendedAppProps) => {
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
   return (
-    <ThirdwebProvider activeChain={ChainId.Mumbai}>
-      <StateContextProvider>
-        <CacheProvider value={emotionCache}>
-          <Head>
-            <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
-            <meta
-              name='description'
-              content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
-            />
-            <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
-            <meta name='viewport' content='initial-scale=1, width=device-width' />
-          </Head>
+    <ThirdwebProvider
+      activeChain="mumbai"
+      clientId={process.env.NEXT_PUBLIC_CLIENT_ID}
+      secretKey={process.env.NEXT_PUBLIC_SECRET_KEY}
+    >
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <title>{themeConfig.templateName}</title>
+          <meta
+            name='description'
+            content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
+          />
+          <meta name='viewport' content='initial-scale=1, width=device-width' />
+        </Head>
 
-          <SessionProvider session={session}>
-            <SettingsProvider>
-              <SettingsConsumer>
-                {({ settings }) => {
-                  return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-                }}
-              </SettingsConsumer>
-            </SettingsProvider>
-          </SessionProvider>
-        </CacheProvider>
-      </StateContextProvider>
+        <SessionProvider session={session}>
+          <SettingsProvider>
+            <SettingsConsumer>
+              {({ settings }) => {
+                return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+              }}
+            </SettingsConsumer>
+          </SettingsProvider>
+        </SessionProvider>
+      </CacheProvider>
     </ThirdwebProvider>
   )
 }
