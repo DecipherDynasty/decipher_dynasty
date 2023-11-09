@@ -44,7 +44,6 @@ const App = (props: ExtendedAppProps) => {
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
-
   return (
     <ThirdwebProvider
       activeChain="mumbai"
