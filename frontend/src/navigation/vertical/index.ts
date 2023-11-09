@@ -2,9 +2,21 @@ import HomeOutline from 'mdi-material-ui/HomeOutline'
 import CalendarOutline from 'mdi-material-ui/Calendar'
 import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
+import {
+  AccountGroup,
+  AccountMultiple,
+  AccountMultipleOutline,
+  BellBadge,
+  CurrencyUsd,
+  Ethereum,
+  FrequentlyAskedQuestions
+} from 'mdi-material-ui'
 
 const navigation = (): VerticalNavItemsType => {
   return [
+    {
+      sectionTitle: 'Platform'
+    },
     {
       title: 'Dashboard',
       icon: HomeOutline,
@@ -21,16 +33,34 @@ const navigation = (): VerticalNavItemsType => {
       path: '/account-settings'
     },
     {
-      sectionTitle: 'Education'
+      sectionTitle: 'Blog & Resources'
     },
     {
       title: 'Scams',
-      icon: AccountCogOutline,
+      icon: BellBadge,
       path: '/scams'
     },
     {
       title: 'Web3',
-      icon: AccountCogOutline,
+      icon: Ethereum,
+      path: './web3'
+    },
+    {
+      sectionTitle: 'About Us'
+    },
+    {
+      title: 'Pricing',
+      icon: CurrencyUsd,
+      path: './pricing'
+    },
+    {
+      title: 'Partnerships',
+      icon: AccountMultipleOutline,
+      path: './web3'
+    },
+    {
+      title: 'FAQs',
+      icon: FrequentlyAskedQuestions,
       path: './web3'
     }
   ]
