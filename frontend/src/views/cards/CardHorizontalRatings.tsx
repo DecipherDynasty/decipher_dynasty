@@ -51,22 +51,25 @@ const CardHorizontalRatings = () => {
         <StyledGrid1 item xs={12} md={6} lg={7}>
           <CardContent>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Lottery/Prize Scams
+              Stumptown Roasters
             </Typography>
-            <Box sx={{ mb: 4.75, display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}></Box>
+            <Box sx={{ mb: 4.75, display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+              <Rating readOnly value={5} name='read-only' sx={{ marginRight: 2 }} />
+              <Typography variant='body2'>5 Star | 98 reviews</Typography>
+            </Box>
             <Typography variant='body2' sx={{ marginBottom: 4 }}>
-              You receive a letter, email, text message or message on social media, saying you have won a prize in a
-              lottery or competition you did not enter.
+              Before there was a United States of America, there were coffee houses, because how are you supposed to
+              build.
             </Typography>
           </CardContent>
-          <CardActions className='card-action-dense' sx={{ width: '100%' }}></CardActions>
+          <CardActions className='card-action-dense' sx={{ width: '100%' }}>
+            <Button>Location</Button>
+            <Button>Reviews</Button>
+          </CardActions>
         </StyledGrid1>
         <StyledGrid2 item xs={12} md={6} lg={5}>
-          <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '40px' }}>
-            <Img
-              alt='Stumptown Roasters'
-              src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPm9GIntQgryGymmdjF1x5lSxftyOunKlS9g&usqp=CAU'
-            />
+          <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Img alt='Stumptown Roasters' src='/images/cards/analog-clock.jpg' />
           </CardContent>
         </StyledGrid2>
       </Grid>

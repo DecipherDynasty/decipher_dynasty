@@ -53,11 +53,7 @@ const CardMobile = () => {
       <Grid container spacing={6}>
         <StyledGrid item md={5} xs={12}>
           <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img
-              width={190}
-              height={220}
-              src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNx46VYYo3JIZ_8Yn4iTtg_TOLXXt5SuphGoRr836RxLQ-DTdhMYNtWlNQDXqW45IdzQc&usqp=CAU'
-            />
+            <img width={137} height={176} alt='Apple iPhone 11 Pro' src='/images/cards/iPhone-11-pro.png' />
           </CardContent>
         </StyledGrid>
         <Grid
@@ -71,16 +67,24 @@ const CardMobile = () => {
         >
           <CardContent>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Romance Scams
+              Apple iPhone 11 Pro
             </Typography>
             <Typography variant='body2' sx={{ marginBottom: 3.5 }}>
-              Scammers will find you on social media, dating or gaming apps and websites. They might also text or email
-              you. They’re really good at making you feel special, so you believe the relationship is real.
+              Apple iPhone 11 Pro smartphone. Announced Sep 2019. Features 5.8″ display Apple A13 Bionic
+            </Typography>
+            <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+              Price:{' '}
+              <Box component='span' sx={{ fontWeight: 'bold' }}>
+                $899
+              </Box>
             </Typography>
           </CardContent>
           <CardActions className='card-action-dense'>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <Button>Learn how to spot a fake profile</Button>
+              <Button>
+                <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
+                Add to Card
+              </Button>
               <IconButton
                 id='long-button'
                 aria-label='share'

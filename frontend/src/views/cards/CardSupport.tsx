@@ -28,12 +28,9 @@ const CardSupport = () => {
         <Typography variant='h6' sx={{ marginBottom: 2.75 }}>
           Support
         </Typography>
-        <Typography variant='body2'>1. Act fast to prevent further losses</Typography>
-        <Typography variant='body2'>2. Seek Assistance for Recovery</Typography>
-        <Typography variant='body2'>3. Warn others and report the scam</Typography>
-        <Typography variant='body2'>4. Watch out for follow up scams</Typography>
         <Typography variant='body2' sx={{ marginBottom: 6 }}>
-          5. Get support in the aftermath
+          According to us blisters are a very common thing and we come across them very often in our daily lives. It is
+          a very common occurrence like cold or fever depending upon your lifestyle.
         </Typography>
         <Button variant='contained' sx={{ padding: theme => theme.spacing(1.75, 5.5) }}>
           Contact Now

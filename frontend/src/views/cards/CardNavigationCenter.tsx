@@ -23,39 +23,40 @@ const CardNavigationCenter = () => {
     <Card>
       <TabContext value={value}>
         <TabList centered onChange={handleChange} aria-label='card navigation example'>
-          <Tab value='1' label='Alerts' />
-          <Tab value='2' label='Blogs' />
-          <Tab value='3' label='Videos' />
+          <Tab value='1' label='Item One' />
+          <Tab value='2' label='Item Two' />
+          <Tab value='3' label='Item Three' />
         </TabList>
         <CardContent sx={{ textAlign: 'center' }}>
           <TabPanel value='1' sx={{ p: 0 }}>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Scam Alert
+              Header One
             </Typography>
             <Typography variant='body2' sx={{ marginBottom: 4 }}>
-              Beware of work-from-offers that are actually "Money Mule" Recruitment Advertisements
+              Pudding tiramisu caramels. Gingerbread gummies danish chocolate bar toffee marzipan. Wafer wafer cake
+              powder danish oat cake.
             </Typography>
-            <Button variant='contained'>Find Out More</Button>
+            <Button variant='contained'>Button One</Button>
           </TabPanel>
           <TabPanel value='2' sx={{ p: 0 }}>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Beware of Cyber Extortion
+              Header Two
             </Typography>
             <Typography variant='body2' sx={{ marginBottom: 4 }}>
-              We would like to alert members of the public to cases of cyber extortion. Between January and May 2020,
-              the Police have received 49 reports, with total losses amounting to at least $50,000.
+              Dragée chupa chups soufflé cheesecake jelly tootsie roll cupcake marzipan. Carrot cake sweet roll gummi
+              bears caramels jelly beans.
             </Typography>
-            <Button variant='contained'>Full story</Button>
+            <Button variant='contained'>Button Two</Button>
           </TabPanel>
           <TabPanel value='3' sx={{ p: 0 }}>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Supermarket Malware Scams
+              Header Three
             </Typography>
             <Typography variant='body2' sx={{ marginBottom: 4 }}>
-              The APK is an app that resembles supermarket apps and contains malware, allowing scammers to steal banking
-              credentials
+              Icing cake macaroon macaroon jelly chocolate bar. Chupa chups dessert dessert soufflé chocolate bar
+              jujubes gummi bears lollipop.
             </Typography>
-            <Button variant='contained'>Watch Full Video</Button>
+            <Button variant='contained'>Button Three</Button>
           </TabPanel>
         </CardContent>
       </TabContext>

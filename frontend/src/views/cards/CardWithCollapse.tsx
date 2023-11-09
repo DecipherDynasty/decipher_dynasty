@@ -27,17 +27,13 @@ const CardWithCollapse = () => {
 
   return (
     <Card>
-      <CardMedia
-        sx={{ height: '14.5625rem' }}
-        image='https://www.iheartradio.ca/image/policy:1.12360570:1588934438/am800-news-jobs-employment-unemployment.jpg?f=default&$p$f=f181c44'
-      />
+      <CardMedia sx={{ height: '14.5625rem' }} image='/images/cards/paper-boat.png' />
       <CardContent>
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
-          Jobs & Employment Scams
+          Popular Uses Of The Internet
         </Typography>
         <Typography variant='body2'>
-          Scammers pretend to be hiring on behalf of high-profile companies and online shopping platforms. They also
-          impersonate well-known recruitment agencies.
+          Although cards can support multiple actions, UI controls, and an overflow menu.
         </Typography>
       </CardContent>
       <CardActions className='card-action-dense'>
@@ -59,9 +55,10 @@ const CardWithCollapse = () => {
         <Divider sx={{ margin: 0 }} />
         <CardContent>
           <Typography variant='body2'>
-            Scammers may trick you by giving you a small payment for completing a job or task. Never send your own
-            money, you won’t get it back. Know who you are dealing with. Contact recruitment agency representatives via
-            phone numbers you have sourced yourself online.
+            I&prime;m a thing. But, like most politicians, he promised more than he could deliver. You won&prime;t have
+            time for sleeping, soldier, not with all the bed making you&prime;ll be doing. Then we&prime;ll go with that
+            data file! Hey, you add a one and two zeros to that or we walk! You&prime;re going to do his laundry?
+            I&prime;ve got to find a way to escape.
           </Typography>
         </CardContent>
       </Collapse>

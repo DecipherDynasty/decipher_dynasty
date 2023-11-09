@@ -8,21 +8,18 @@ import CardContent from '@mui/material/CardContent'
 const CardAppleWatch = () => {
   return (
     <Card>
-      <CardMedia
-        sx={{ height: '9.375rem' }}
-        image='https://images.ctfassets.net/lzny33ho1g45/social-media-for-business-p-img/6e7a2eaf201bf90656f821319ff46f13/file.png?w=1520&fm=jpg&q=30&fit=thumb&h=760'
-      />
+      <CardMedia sx={{ height: '9.375rem' }} image='/images/cards/watch-on-hand.jpg' />
       <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
-          Social Media Scams
+          Apple Watch
         </Typography>
+        <Typography sx={{ marginBottom: 2 }}>$249.40</Typography>
         <Typography variant='body2'>
-          Scammers can also learn a lot about you from details you share on your social media accounts. They create
-          quizzes or posts designed to deceive you into sharing personal information and target you with other scams.
+          3.1GHz 6-core 10th-generation Intel Core i5 processor, Turbo Boost up to 4.5GHz
         </Typography>
       </CardContent>
       <Button variant='contained' sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
-        Protect Yourself
+        Add To Cart
       </Button>
     </Card>
   )

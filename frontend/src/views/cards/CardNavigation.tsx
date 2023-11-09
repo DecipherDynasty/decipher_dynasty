@@ -23,44 +23,40 @@ const CardNavigation = () => {
     <Card>
       <TabContext value={value}>
         <TabList onChange={handleChange} aria-label='card navigation example'>
-          <Tab value='1' label='Loan' />
-          <Tab value='2' label='Romance' />
-          <Tab value='3' label='Investment' />
+          <Tab value='1' label='Item One' />
+          <Tab value='2' label='Item Two' />
+          <Tab value='3' label='Item Three' />
         </TabList>
         <CardContent>
           <TabPanel value='1' sx={{ p: 0 }}>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Loan Scam
+              Header One
             </Typography>
             <Typography variant='body2' sx={{ marginBottom: 4 }}>
-              One Facebook page I saw an advertisement for was called "Very Fast Loan." I was intrigued and asked for a
-              $7000 loan. My request was processed by an officer by the name of Daphne, who made me an offer for a 7000
-              SGD loan with 340x24 terms.
+              Pudding tiramisu caramels. Gingerbread gummies danish chocolate bar toffee marzipan. Wafer wafer cake
+              powder danish oat cake.
             </Typography>
-            <Button variant='contained'>FULL STORY</Button>
+            <Button variant='contained'>Button One</Button>
           </TabPanel>
           <TabPanel value='2' sx={{ p: 0 }}>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Romance Scam
+              Header Two
             </Typography>
             <Typography variant='body2' sx={{ marginBottom: 4 }}>
-              I met Thomas on the CMB app. He eventually asked to talk to me on WhatsApp or Telegram, and we started
-              doing so virtually every day. Occasionally, he would send pictures of food and expressed concern for my
-              welfare.
+              Dragée chupa chups soufflé cheesecake jelly tootsie roll cupcake marzipan. Carrot cake sweet roll gummi
+              bears caramels jelly beans.
             </Typography>
-            <Button variant='contained'>FULL STORY</Button>
+            <Button variant='contained'>Button Two</Button>
           </TabPanel>
           <TabPanel value='3' sx={{ p: 0 }}>
             <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              Investment Scam
+              Header Three
             </Typography>
             <Typography variant='body2' sx={{ marginBottom: 4 }}>
-              I mistakenly replied to a WhatsApp message sent by scammer Andy on August 29, 2023. After that, we started
-              having regular conversations. I provided a screenshot of my previous passport and sent SGD $1500 to a
-              phoney Standard Chartered bank account after becoming involved in a fraudulent bitcoin trading operation
-              within a week.
+              Icing cake macaroon macaroon jelly chocolate bar. Chupa chups dessert dessert soufflé chocolate bar
+              jujubes gummi bears lollipop.
             </Typography>
-            <Button variant='contained'>FULL STORY</Button>
+            <Button variant='contained'>Button Three</Button>
           </TabPanel>
         </CardContent>
       </TabContext>
