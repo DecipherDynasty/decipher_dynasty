@@ -11,8 +11,9 @@ import StarOutline from 'mdi-material-ui/StarOutline'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import React, { useCallback } from 'react'
+import { useContract, useContractWrite } from '@thirdweb-dev/react'
+import dayjs from 'dayjs'
 
-// Styled Box component
 const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     borderRight: `1px solid ${theme.palette.divider}`
@@ -22,16 +23,12 @@ const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
 const CardMembership: React.FC<{
   eventDescription?: string
   eventName?: string
+  id?: string
   intendedAmountToRaise?: number
-}> = ({ eventName, eventDescription, intendedAmountToRaise }) => {
+}> = ({ eventName, eventDescription, intendedAmountToRaise, id }) => {
+  const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS)
+  const { mutateAsync: issueBusinessCertificate, isLoading } = useContractWrite(contract, 'issueBusinessCertificate')
 
-  /**
-   * This method will attempt to upload the data into the chain.
-   * If it is successful, we will get the address to store in the
-   * database so that we can reference it in the future.
-   * 
-   * TODO: Pending by Tze Loong
-   */
   const approveEvent = useCallback(async () => {
     if (typeof window.ethereum === 'undefined') {
       alert('You do not have metamask installed')
@@ -39,9 +36,12 @@ const CardMembership: React.FC<{
       return
     }
 
-    // Get all the accounts associated with the metamask
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
-  }, [])
+    const today = dayjs().toISOString()
+
+    await issueBusinessCertificate({
+      args: [id, today, id]
+    })
+  }, [id])
 
   return (
     <Card>
