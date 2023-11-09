@@ -20,6 +20,7 @@ const IndividualEventPage = () => {
       canApprove={event?.canApprove}
       id={router.query.id as string}
       intendedAmountToRaise={event?.intendedAmountToRaise}
+      organisationId={event?.organisationId}
     />
   )
 }

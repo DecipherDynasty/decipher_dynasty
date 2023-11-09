@@ -13,6 +13,7 @@ import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import React, { useCallback } from 'react'
 import { useContract, useContractWrite } from '@thirdweb-dev/react'
 import dayjs from 'dayjs'
+import { trpc } from 'src/utils/trpc'
 
 const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
@@ -29,7 +30,8 @@ const CardMembership: React.FC<{
   organisationId?: string
 }> = ({ eventName, eventDescription, intendedAmountToRaise, id, canApprove, organisationId }) => {
   const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS)
-  const { mutateAsync: issueCharityCertificate } = useContractWrite(contract, 'issueCharityCertificate')
+  const { mutateAsync: approveEventFunction } = trpc.event.approveEvent.useMutation()
+  const { mutateAsync: issueBusinessCertificate } = useContractWrite(contract, 'issueBusinessCertificate')
 
   const approveEvent = useCallback(async () => {
     try {
@@ -39,13 +41,15 @@ const CardMembership: React.FC<{
 
       const today = dayjs().toISOString()
 
-      await issueCharityCertificate({
+      await issueBusinessCertificate({
         args: [id, today, organisationId]
       })
+
+      await approveEventFunction({ eventId: id as string })
     } catch (e) {
       alert((e as Error).message)
     }
-  }, [id, issueCharityCertificate, canApprove, organisationId])
+  }, [id, issueBusinessCertificate, canApprove, organisationId, approveEventFunction])
 
   return (
     <Card>

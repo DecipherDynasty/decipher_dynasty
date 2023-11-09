@@ -1,6 +1,6 @@
 import { protectedProcedure, router, publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
-import { organisationCollection } from 'src/server/db/collections/organisationCollection'
+import { Organisation, organisationCollection } from 'src/server/db/collections/organisationCollection'
 import { Event, eventCollection } from 'src/server/db/collections/eventCollection'
 import { createEventFormSchema } from 'src/models/schema/createEventFormSchema'
 import { firestore } from 'firebase-admin'
@@ -9,6 +9,7 @@ import {
   getIndividualEventInputSchema,
   getIndividualEventOutputSchema
 } from 'src/models/schema/getIndividualEventSchema'
+import { approveEventSchema } from 'src/models/schema/approveEventSchema'
 
 /**
  * The following procedure will be called when an organisation or user
@@ -140,7 +141,38 @@ const getIndividualEvent = publicProcedure
     }
   })
 
+const approveEvent = protectedProcedure.input(approveEventSchema).mutation(async ({ ctx, input }) => {
+  const eventSnapshot = await eventCollection.doc(input.eventId).get()
+  if (!eventSnapshot.exists) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'The event cannot be found'
+    })
+  }
+
+  const organisationSnapshot = await organisationCollection.doc(ctx.session.user.id).get()
+  if (!organisationSnapshot.exists) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Invalid user'
+    })
+  }
+
+  const organisation = organisationSnapshot.data() as Organisation
+  if (organisation.permission !== 'admin') {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'No administrative access'
+    })
+  }
+
+  await eventSnapshot.ref.update({
+    status: 'approved'
+  })
+})
+
 export const eventRouter = router({
+  approveEvent,
   createEvent,
   getEventsForOrganisation,
   getIndividualEvent
