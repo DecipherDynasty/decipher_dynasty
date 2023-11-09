@@ -9,6 +9,7 @@ export const getIndividualEventOutputSchema = z.object({
   eventEndDate: z.date(),
   eventLocation: z.string(),
   eventName: z.string(),
+  hasApproveRights: z.boolean(),
   intendedAmountToRaise: z.number(),
   status: z.enum(['approved', 'pending', 'rejected']),
   photoUrl: z.string()

@@ -108,11 +108,24 @@ const getIndividualEvent = publicProcedure
       })
     }
 
+    let hasApproveRights: boolean = false
+    if (ctx.session && ctx.session.user) {
+      const organisation = await organisationCollection.doc(ctx.session.user.id).get()
+      if (!organisation.exists) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Invalid user'
+        })
+      }
+      hasApproveRights = organisation.data()?.permission === 'admin'
+    }
+
     return {
       eventDescription: event.eventDescription,
       eventEndDate: event.eventEndDate.toDate(),
       eventLocation: event.eventLocation,
       eventName: event.eventName,
+      hasApproveRights,
       intendedAmountToRaise: event.intendedAmountToRaise,
       status: event.status,
       photoUrl: event.photoUrl

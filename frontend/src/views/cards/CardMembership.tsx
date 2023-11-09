@@ -23,25 +23,32 @@ const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
 const CardMembership: React.FC<{
   eventDescription?: string
   eventName?: string
+  hasApproveRights?: boolean
   id?: string
   intendedAmountToRaise?: number
-}> = ({ eventName, eventDescription, intendedAmountToRaise, id }) => {
+}> = ({ eventName, eventDescription, intendedAmountToRaise, id, hasApproveRights }) => {
   const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS)
-  const { mutateAsync: issueBusinessCertificate, isLoading } = useContractWrite(contract, 'issueBusinessCertificate')
+  const { mutateAsync: issueBusinessCertificate } = useContractWrite(contract, 'issueBusinessCertificate')
 
   const approveEvent = useCallback(async () => {
-    if (typeof window.ethereum === 'undefined') {
-      alert('You do not have metamask installed')
+    try {
+      if (typeof window.ethereum === 'undefined') {
+        alert('You do not have metamask installed')
 
-      return
+        return
+      }
+
+      if (!hasApproveRights) throw new Error('The user has no rights to approve')
+
+      const today = dayjs().toISOString()
+
+      await issueBusinessCertificate({
+        args: [id, today, id]
+      })
+    } catch (e) {
+      alert((e as Error).message)
     }
-
-    const today = dayjs().toISOString()
-
-    await issueBusinessCertificate({
-      args: [id, today, id]
-    })
-  }, [id])
+  }, [id, issueBusinessCertificate, hasApproveRights])
 
   return (
     <Card>
@@ -108,9 +115,11 @@ const CardMembership: React.FC<{
                 <span>5 Tips For Offshore</span>
                 <span>Software Development</span>
               </Typography>
-              <Button variant='contained' onClick={approveEvent}>
-                Contact Now
-              </Button>
+              {hasApproveRights ? (
+                <Button variant='contained' onClick={approveEvent}>
+                  Approve Event
+                </Button>
+              ) : null}
             </Box>
           </CardContent>
         </Grid>
