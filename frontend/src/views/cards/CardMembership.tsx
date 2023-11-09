@@ -23,22 +23,18 @@ const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
 const CardMembership: React.FC<{
   eventDescription?: string
   eventName?: string
-  hasApproveRights?: boolean
+  canApprove?: boolean
   id?: string
   intendedAmountToRaise?: number
-}> = ({ eventName, eventDescription, intendedAmountToRaise, id, hasApproveRights }) => {
+}> = ({ eventName, eventDescription, intendedAmountToRaise, id, canApprove }) => {
   const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS)
   const { mutateAsync: issueBusinessCertificate } = useContractWrite(contract, 'issueBusinessCertificate')
 
   const approveEvent = useCallback(async () => {
     try {
-      if (typeof window.ethereum === 'undefined') {
-        alert('You do not have metamask installed')
+      if (typeof window.ethereum === 'undefined') throw Error('You do not have metamask installed')
 
-        return
-      }
-
-      if (!hasApproveRights) throw new Error('The user has no rights to approve')
+      if (!canApprove) throw new Error('The user has no rights to approve')
 
       const today = dayjs().toISOString()
 
@@ -48,7 +44,7 @@ const CardMembership: React.FC<{
     } catch (e) {
       alert((e as Error).message)
     }
-  }, [id, issueBusinessCertificate, hasApproveRights])
+  }, [id, issueBusinessCertificate, canApprove])
 
   return (
     <Card>
@@ -104,6 +100,9 @@ const CardMembership: React.FC<{
             }}
           >
             <Box>
+              <Typography variant='body2' sx={{ mb: 13.75, display: 'flex', flexDirection: 'column' }}>
+                <span>We intend to raise</span>
+              </Typography>
               <Box sx={{ mb: 3.5, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
                 <Typography variant='h6'>$</Typography>
                 <Typography variant='h6' sx={{ lineHeight: 1, fontWeight: 600, fontSize: '3.75rem !important' }}>
@@ -111,11 +110,8 @@ const CardMembership: React.FC<{
                 </Typography>
                 <Typography variant='h6'>USD</Typography>
               </Box>
-              <Typography variant='body2' sx={{ mb: 13.75, display: 'flex', flexDirection: 'column' }}>
-                <span>5 Tips For Offshore</span>
-                <span>Software Development</span>
-              </Typography>
-              {hasApproveRights ? (
+
+              {canApprove ? (
                 <Button variant='contained' onClick={approveEvent}>
                   Approve Event
                 </Button>

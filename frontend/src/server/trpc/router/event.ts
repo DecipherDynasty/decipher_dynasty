@@ -108,7 +108,7 @@ const getIndividualEvent = publicProcedure
       })
     }
 
-    let hasApproveRights: boolean = false
+    let canApprove: boolean = false
     if (ctx.session && ctx.session.user) {
       const organisation = await organisationCollection.doc(ctx.session.user.id).get()
       if (!organisation.exists) {
@@ -117,15 +117,15 @@ const getIndividualEvent = publicProcedure
           message: 'Invalid user'
         })
       }
-      hasApproveRights = organisation.data()?.permission === 'admin'
+      canApprove = organisation.data()?.permission === 'admin' && event.status === 'pending'
     }
 
     return {
+      canApprove,
       eventDescription: event.eventDescription,
       eventEndDate: event.eventEndDate.toDate(),
       eventLocation: event.eventLocation,
       eventName: event.eventName,
-      hasApproveRights,
       intendedAmountToRaise: event.intendedAmountToRaise,
       status: event.status,
       photoUrl: event.photoUrl

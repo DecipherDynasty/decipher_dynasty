@@ -17,7 +17,7 @@ const IndividualEventPage = () => {
     <CardMembership
       eventName={event?.eventName}
       eventDescription={event?.eventDescription}
-      hasApproveRights={event?.hasApproveRights}
+      canApprove={event?.canApprove}
       id={router.query.id as string}
       intendedAmountToRaise={event?.intendedAmountToRaise}
     />
